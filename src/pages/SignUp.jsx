@@ -52,7 +52,7 @@ function SignUp() {
       formDataCopy.timestamp = serverTimestamp()
 
       await setDoc(doc(db, 'users', user.uid), formDataCopy)
-
+      
       navigate('/')
     } catch (error) {
       toast.error('Incomplete Credentials')

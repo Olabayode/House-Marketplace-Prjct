@@ -1,19 +1,17 @@
-import React, { useEffect} from 'react'
+import React, { useEffect, useState} from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from 'firebase/auth'
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase.config'
 import { toast } from 'react-toastify'
 import googleIcon from '../assets/svg/googleIcon.svg'
-//import Spinner from './Spinner'
+import Spinner from './Spinner'
 
 function OAuth() {
-    //const[loading, setLoading] = useState(true)
+    const[loading, setLoading] = useState(false)
   
     const navigate = useNavigate()
     const location = useLocation()
-
-    
   
     useEffect(() =>{
       const auth = getAuth()
@@ -22,7 +20,8 @@ function OAuth() {
           handleRedirect(result)
       }})
     } ,[])
-        
+
+    
     
   
   
@@ -32,14 +31,14 @@ function OAuth() {
           const auth = getAuth()
           const provider = new GoogleAuthProvider()
           await signInWithRedirect(auth, provider)
+          if(loading){
+            return <Spinner/>
+          }
           
       } catch (error) {
         toast.error('Could Not Authorize with Google')  
       }
-      // if(loading){
-      //   return<Spinner/>
-      // }
-      // setLoading(false)
+
   
     }
 
@@ -51,6 +50,7 @@ function OAuth() {
       const docRef = doc(db, 'users', user.uid)
       const docSnap = await getDoc(docRef)
 
+
   
       //if user does not exist
       if(!docSnap.exists()){
@@ -61,6 +61,7 @@ function OAuth() {
         })
       }
       navigate('/')
+      setLoading(false)
     }
   
     return (
